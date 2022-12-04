@@ -82,7 +82,7 @@ impl From<char> for Outcome {
     }
 }
 
-pub fn part1(input: &str) -> u32 {
+pub fn solve_part1(input: &str) -> u32 {
     input
         .lines()
         .map(|line| {
@@ -95,7 +95,7 @@ pub fn part1(input: &str) -> u32 {
         .sum()
 }
 
-pub fn part2(input: &str) -> u32 {
+pub fn solve_part2(input: &str) -> u32 {
     input
         .lines()
         .map(|line| {
@@ -108,4 +108,25 @@ pub fn part2(input: &str) -> u32 {
             target_outcome.match_with(their_hand).score() + target_outcome.score()
         })
         .sum()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    static INPUT: &str = "A Y
+B X
+C Z";
+
+    #[test]
+    fn test_part1() {
+        let score = solve_part1(&INPUT);
+        assert_eq!(15, score);
+    }
+
+    #[test]
+    fn test_part2() {
+        let score = solve_part2(&INPUT);
+        assert_eq!(12, score);
+    }
 }
