@@ -2,26 +2,19 @@ use itertools::Itertools;
 
 fn char_priority(c: char) -> u64 {
     if c.is_ascii_uppercase() {
-        u64::from(c) - b'A' as u64 + 27
+        u64::from(c) - u64::from(b'A') + 27
     } else if c.is_ascii_lowercase() {
-        u64::from(c) - b'a' as u64 + 1
+        u64::from(c) - u64::from(b'a') + 1
     } else {
         panic!("Invalid char {c}")
     }
 }
 
+#[derive(Copy, Clone)]
 struct ItemSet(u64);
 
 impl ItemSet {
-    fn new() -> Self {
-        Self(0)
-    }
-
-    fn insert(&mut self, c: char) {
-        self.0 |= 1 << char_priority(c);
-    }
-
-    fn contains(&self, c: char) -> bool {
+    fn contains(self, c: char) -> bool {
         self.0 & (1 << char_priority(c)) != 0
     }
 
@@ -32,11 +25,11 @@ impl ItemSet {
 
 impl From<&str> for ItemSet {
     fn from(s: &str) -> Self {
-        let mut set = ItemSet::new();
-        for c in s.chars() {
-            set.insert(c);
-        }
-        set
+        Self(
+            s.chars()
+                .map(char_priority)
+                .fold(0, |acc, x| acc | (1 << x)),
+        )
     }
 }
 
@@ -44,8 +37,6 @@ pub fn solve_part1(input: &str) -> u64 {
     let mut priority_sum = 0;
     for rucksack in input.lines() {
         let (first_half, second_half) = rucksack.split_at(rucksack.len() / 2);
-        assert_eq!(first_half.len(), second_half.len());
-        println!("{first_half} : {second_half}");
         let set = ItemSet::from(first_half);
         for c in second_half.chars() {
             if set.contains(c) {

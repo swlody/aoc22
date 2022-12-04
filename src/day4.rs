@@ -1,21 +1,11 @@
 use std::ops::RangeInclusive;
 
-trait RangeCompare {
-    fn contains_range(&self, other: &Self) -> bool;
-    fn overlaps_range(&self, other: &Self) -> bool;
+fn ranges_contain<T: PartialOrd>(a: &RangeInclusive<T>, b: &RangeInclusive<T>) -> bool {
+    a.contains(b.start()) && a.contains(b.end())
 }
 
-impl<T> RangeCompare for RangeInclusive<T>
-where
-    T: PartialOrd,
-{
-    fn contains_range(&self, other: &Self) -> bool {
-        self.start() <= other.start() && self.end() >= other.end()
-    }
-
-    fn overlaps_range(&self, other: &Self) -> bool {
-        self.contains(other.start()) || self.contains(other.end())
-    }
+fn ranges_overlap<T: PartialOrd>(a: &RangeInclusive<T>, b: &RangeInclusive<T>) -> bool {
+    a.contains(b.start()) || a.contains(b.end())
 }
 
 pub fn generator(input: &str) -> Vec<(RangeInclusive<u32>, RangeInclusive<u32>)> {
@@ -37,7 +27,7 @@ pub fn solve_part1(pairs: &[(RangeInclusive<u32>, RangeInclusive<u32>)]) -> usiz
     pairs
         .iter()
         .filter(|(first_range, second_range)| {
-            first_range.contains_range(second_range) || second_range.contains_range(first_range)
+            ranges_contain(first_range, second_range) || ranges_contain(second_range, first_range)
         })
         .count()
 }
@@ -46,7 +36,7 @@ pub fn solve_part2(pairs: &[(RangeInclusive<u32>, RangeInclusive<u32>)]) -> usiz
     pairs
         .iter()
         .filter(|(first_range, second_range)| {
-            first_range.overlaps_range(second_range) || second_range.overlaps_range(first_range)
+            ranges_overlap(first_range, second_range) || ranges_overlap(second_range, first_range)
         })
         .count()
 }

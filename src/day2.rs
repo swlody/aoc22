@@ -1,3 +1,5 @@
+use anyhow::{Error, Result};
+
 #[derive(Copy, Clone)]
 pub enum Hand {
     Rock = 1,
@@ -6,36 +8,30 @@ pub enum Hand {
 }
 
 impl Hand {
-    fn score(&self) -> u32 {
-        *self as u32
+    fn score(self) -> u32 {
+        self as u32
     }
 
-    fn versus(&self, other: Self) -> Outcome {
+    fn versus(self, other: Self) -> Outcome {
         use Hand::*;
         use Outcome::*;
         match (self, other) {
-            (Rock, Rock) => Tie,
-            (Rock, Paper) => Loss,
-            (Rock, Scissors) => Win,
-
-            (Paper, Rock) => Win,
-            (Paper, Paper) => Tie,
-            (Paper, Scissors) => Loss,
-
-            (Scissors, Rock) => Loss,
-            (Scissors, Paper) => Win,
-            (Scissors, Scissors) => Tie,
+            (Rock, Rock) | (Paper, Paper) | (Scissors, Scissors) => Tie,
+            (Rock, Paper) | (Paper, Scissors) | (Scissors, Rock) => Loss,
+            (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => Win,
         }
     }
 }
 
-impl From<u8> for Hand {
-    fn from(value: u8) -> Self {
-        match value {
-            b'A' | b'X' => Hand::Rock,
-            b'B' | b'Y' => Hand::Paper,
-            b'C' | b'Z' => Hand::Scissors,
-            _ => panic!("Invalid hand {value}"),
+impl TryFrom<u8> for Hand {
+    type Error = Error;
+
+    fn try_from(c: u8) -> Result<Self> {
+        match c {
+            b'A' | b'X' => Ok(Self::Rock),
+            b'B' | b'Y' => Ok(Self::Paper),
+            b'C' | b'Z' => Ok(Self::Scissors),
+            _ => Err(Error::msg(format!("Invalid hand {c}"))),
         }
     }
 }
@@ -48,36 +44,30 @@ pub enum Outcome {
 }
 
 impl Outcome {
-    fn score(&self) -> u32 {
-        *self as u32
+    fn score(self) -> u32 {
+        self as u32
     }
 
-    fn match_with(&self, other_hand: Hand) -> Hand {
+    fn match_with(self, other_hand: Hand) -> Hand {
         use Hand::*;
         use Outcome::*;
         match (self, other_hand) {
-            (Loss, Rock) => Scissors,
-            (Loss, Paper) => Rock,
-            (Loss, Scissors) => Paper,
-
-            (Tie, Rock) => Rock,
-            (Tie, Paper) => Paper,
-            (Tie, Scissors) => Scissors,
-
-            (Win, Rock) => Paper,
-            (Win, Paper) => Scissors,
-            (Win, Scissors) => Rock,
+            (Loss, Rock) | (Tie, Scissors) | (Win, Paper) => Scissors,
+            (Loss, Paper) | (Tie, Rock) | (Win, Scissors) => Rock,
+            (Loss, Scissors) | (Tie, Paper) | (Win, Rock) => Paper,
         }
     }
 }
 
-impl From<u8> for Outcome {
-    fn from(value: u8) -> Self {
-        match value {
-            b'X' => Outcome::Loss,
-            b'Y' => Outcome::Tie,
-            b'Z' => Outcome::Win,
-            _ => panic!("Invalid outcome {value}"),
+impl TryFrom<u8> for Outcome {
+    type Error = Error;
+
+    fn try_from(c: u8) -> Result<Self> {
+        match c {
+            b'X' => Ok(Self::Loss),
+            b'Y' => Ok(Self::Tie),
+            b'Z' => Ok(Self::Win),
+            _ => Err(Error::msg(format!("Invalid outcome {c}"))),
         }
     }
 }
@@ -87,8 +77,8 @@ pub fn solve_part1(input: &str) -> u32 {
         .lines()
         .map(|line| {
             (
-                Hand::from(line.as_bytes()[0]),
-                Hand::from(line.as_bytes()[2]),
+                Hand::try_from(line.as_bytes()[0]).unwrap(),
+                Hand::try_from(line.as_bytes()[2]).unwrap(),
             )
         })
         .map(|(their_hand, our_hand)| our_hand.versus(their_hand).score() + our_hand.score())
@@ -100,8 +90,8 @@ pub fn solve_part2(input: &str) -> u32 {
         .lines()
         .map(|line| {
             (
-                Hand::from(line.as_bytes()[0]),
-                Outcome::from(line.as_bytes()[2]),
+                Hand::try_from(line.as_bytes()[0]).unwrap(),
+                Outcome::try_from(line.as_bytes()[2]).unwrap(),
             )
         })
         .map(|(their_hand, target_outcome)| {
