@@ -76,13 +76,13 @@ CrZsJsPPZsGzwwsLwLmpwMDw";
 
     #[test]
     fn test_part1() {
-        let priority_sum = solve_part1(&INPUT);
+        let priority_sum = solve_part1(INPUT);
         assert_eq!(157, priority_sum);
     }
 
     #[test]
     fn test_part2() {
-        let priority_sum = solve_part2(&INPUT);
+        let priority_sum = solve_part2(INPUT);
         assert_eq!(70, priority_sum);
     }
 }

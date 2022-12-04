@@ -48,14 +48,14 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let calories = generator(&INPUT);
+        let calories = generator(INPUT);
         let total_calories = solve_part1(&calories);
         assert_eq!(24000, total_calories);
     }
 
     #[test]
     fn test_part2() {
-        let calories = generator(&INPUT);
+        let calories = generator(INPUT);
         let total_calories = solve_part2(&calories);
         assert_eq!(45000, total_calories);
     }

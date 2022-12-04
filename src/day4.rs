@@ -54,14 +54,14 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let pairs = generator(&INPUT);
+        let pairs = generator(INPUT);
         let contained_pairs = solve_part1(&pairs);
         assert_eq!(2, contained_pairs);
     }
 
     #[test]
     fn test_part2() {
-        let pairs = generator(&INPUT);
+        let pairs = generator(INPUT);
         let overlapping_pairs = solve_part2(&pairs);
         assert_eq!(4, overlapping_pairs);
     }

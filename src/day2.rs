@@ -1,4 +1,4 @@
-use anyhow::{Error, Result};
+use anyhow::{anyhow, Error, Result};
 
 #[derive(Copy, Clone)]
 pub enum Hand {
@@ -31,7 +31,7 @@ impl TryFrom<u8> for Hand {
             b'A' | b'X' => Ok(Self::Rock),
             b'B' | b'Y' => Ok(Self::Paper),
             b'C' | b'Z' => Ok(Self::Scissors),
-            _ => Err(Error::msg(format!("Invalid hand {c}"))),
+            _ => Err(anyhow!("Invalid hand {c}")),
         }
     }
 }
@@ -67,7 +67,7 @@ impl TryFrom<u8> for Outcome {
             b'X' => Ok(Self::Loss),
             b'Y' => Ok(Self::Tie),
             b'Z' => Ok(Self::Win),
-            _ => Err(Error::msg(format!("Invalid outcome {c}"))),
+            _ => Err(anyhow!("Invalid outcome {c}")),
         }
     }
 }
@@ -110,13 +110,13 @@ C Z";
 
     #[test]
     fn test_part1() {
-        let score = solve_part1(&INPUT);
+        let score = solve_part1(INPUT);
         assert_eq!(15, score);
     }
 
     #[test]
     fn test_part2() {
-        let score = solve_part2(&INPUT);
+        let score = solve_part2(INPUT);
         assert_eq!(12, score);
     }
 }
