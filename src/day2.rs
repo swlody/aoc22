@@ -29,12 +29,12 @@ impl Hand {
     }
 }
 
-impl From<char> for Hand {
-    fn from(value: char) -> Self {
+impl From<u8> for Hand {
+    fn from(value: u8) -> Self {
         match value {
-            'A' | 'X' => Hand::Rock,
-            'B' | 'Y' => Hand::Paper,
-            'C' | 'Z' => Hand::Scissors,
+            b'A' | b'X' => Hand::Rock,
+            b'B' | b'Y' => Hand::Paper,
+            b'C' | b'Z' => Hand::Scissors,
             _ => panic!("Invalid hand {value}"),
         }
     }
@@ -71,12 +71,12 @@ impl Outcome {
     }
 }
 
-impl From<char> for Outcome {
-    fn from(value: char) -> Self {
+impl From<u8> for Outcome {
+    fn from(value: u8) -> Self {
         match value {
-            'X' => Outcome::Loss,
-            'Y' => Outcome::Tie,
-            'Z' => Outcome::Win,
+            b'X' => Outcome::Loss,
+            b'Y' => Outcome::Tie,
+            b'Z' => Outcome::Win,
             _ => panic!("Invalid outcome {value}"),
         }
     }
@@ -87,8 +87,8 @@ pub fn solve_part1(input: &str) -> u32 {
         .lines()
         .map(|line| {
             (
-                Hand::from(line.chars().nth(0).unwrap()),
-                Hand::from(line.chars().nth(2).unwrap()),
+                Hand::from(line.as_bytes()[0]),
+                Hand::from(line.as_bytes()[2]),
             )
         })
         .map(|(their_hand, our_hand)| our_hand.versus(their_hand).score() + our_hand.score())
@@ -100,8 +100,8 @@ pub fn solve_part2(input: &str) -> u32 {
         .lines()
         .map(|line| {
             (
-                Hand::from(line.chars().nth(0).unwrap()),
-                Outcome::from(line.chars().nth(2).unwrap()),
+                Hand::from(line.as_bytes()[0]),
+                Outcome::from(line.as_bytes()[2]),
             )
         })
         .map(|(their_hand, target_outcome)| {

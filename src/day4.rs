@@ -26,7 +26,7 @@ pub fn generator(input: &str) -> Vec<(RangeInclusive<u32>, RangeInclusive<u32>)>
             let (first_start, first_end) = first.split_once('-').unwrap();
             let (second_start, second_end) = second.split_once('-').unwrap();
             (
-                (first_start.parse().unwrap()..=first_end.parse().unwrap()),
+                first_start.parse().unwrap()..=first_end.parse().unwrap(),
                 second_start.parse().unwrap()..=second_end.parse().unwrap(),
             )
         })
@@ -37,7 +37,7 @@ pub fn solve_part1(pairs: &[(RangeInclusive<u32>, RangeInclusive<u32>)]) -> usiz
     pairs
         .iter()
         .filter(|(first_range, second_range)| {
-            first_range.contains_range(&second_range) || second_range.contains_range(&first_range)
+            first_range.contains_range(second_range) || second_range.contains_range(first_range)
         })
         .count()
 }
@@ -46,7 +46,7 @@ pub fn solve_part2(pairs: &[(RangeInclusive<u32>, RangeInclusive<u32>)]) -> usiz
     pairs
         .iter()
         .filter(|(first_range, second_range)| {
-            first_range.overlaps_range(&second_range) || second_range.overlaps_range(&first_range)
+            first_range.overlaps_range(second_range) || second_range.overlaps_range(first_range)
         })
         .count()
 }
