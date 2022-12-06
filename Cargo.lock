@@ -10,9 +10,9 @@ checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
 
 [[package]]
 name = "aoc-main"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62d5083e3889fa15a9b6bccbd83284df128a050a0c0c2a4562f96544ace6b3e3"
+checksum = "28b9816e853dc044ff3bf6147b905626d17549c623716cd4be01defeb4156547"
 dependencies = [
  "attohttpc",
  "clap",

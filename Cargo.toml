@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.66"
-aoc-main = "0.4.1"
+aoc-main = "0.5.0"
 itertools = "0.10.5"
