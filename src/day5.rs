@@ -1,5 +1,5 @@
 pub struct Movement {
-    quantity: u32,
+    quantity: usize,
     start_stack: usize,
     end_stack: usize,
 }
@@ -55,7 +55,7 @@ fn get_tops_of_stacks(stacks: &Vec<Vec<char>>) -> String {
 pub fn solve_part1(input: &str) -> String {
     let (mut stacks, procedure) = get_stacks_and_procedure(input);
 
-    for movement in procedure.iter() {
+    for movement in &procedure {
         for _ in 0..movement.quantity {
             let crate_name = stacks[movement.start_stack].pop().unwrap();
             stacks[movement.end_stack].push(crate_name);
@@ -68,8 +68,8 @@ pub fn solve_part1(input: &str) -> String {
 pub fn solve_part2(input: &str) -> String {
     let (mut stacks, procedure) = get_stacks_and_procedure(input);
 
-    for movement in procedure.iter() {
-        let mut moving_crates = Vec::new();
+    for movement in &procedure {
+        let mut moving_crates = Vec::with_capacity(movement.quantity);
         for _ in 0..movement.quantity {
             let crate_name = stacks[movement.start_stack].pop().unwrap();
             moving_crates.push(crate_name);
