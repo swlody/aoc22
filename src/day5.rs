@@ -4,7 +4,7 @@ pub struct Movement {
     end_stack: usize,
 }
 
-pub fn solve_part1(input: &str) -> String {
+fn get_stacks_and_procedure(input: &str) -> (Vec<Vec<char>>, Vec<Movement>) {
     let (original_stacks, move_procedure) = input.split_once("\n\n").unwrap();
     let mut stacks = Vec::new();
 
@@ -25,37 +25,59 @@ pub fn solve_part1(input: &str) -> String {
         }
     }
 
-    let movements = {
-        let mut movements = Vec::new();
-        for movement in move_procedure.lines() {
-            let (quantity, rest) = movement
-                .strip_prefix("move ")
-                .unwrap()
-                .split_once(" from ")
-                .unwrap();
-            let (start_stack, end_stack) = rest.split_once(" to ").unwrap();
+    let mut procedure = Vec::new();
+    for movement in move_procedure.lines() {
+        let (quantity, rest) = movement
+            .strip_prefix("move ")
+            .unwrap()
+            .split_once(" from ")
+            .unwrap();
+        let (start_stack, end_stack) = rest.split_once(" to ").unwrap();
 
-            movements.push(Movement {
-                quantity: quantity.parse().unwrap(),
-                start_stack: start_stack.parse::<usize>().unwrap() - 1,
-                end_stack: end_stack.parse::<usize>().unwrap() - 1,
-            });
-        }
-        movements
-    };
+        procedure.push(Movement {
+            quantity: quantity.parse().unwrap(),
+            start_stack: start_stack.parse::<usize>().unwrap() - 1,
+            end_stack: end_stack.parse::<usize>().unwrap() - 1,
+        });
+    }
 
-    for movement in movements.iter() {
+    (stacks, procedure)
+}
+
+fn get_tops_of_stacks(stacks: &Vec<Vec<char>>) -> String {
+    let mut tops_of_stacks = String::new();
+    for stack in stacks {
+        tops_of_stacks.push(stack[stack.len() - 1]);
+    }
+    tops_of_stacks
+}
+
+pub fn solve_part1(input: &str) -> String {
+    let (mut stacks, procedure) = get_stacks_and_procedure(input);
+
+    for movement in procedure.iter() {
         for _ in 0..movement.quantity {
             let crate_name = stacks[movement.start_stack].pop().unwrap();
             stacks[movement.end_stack].push(crate_name);
         }
     }
 
-    let mut tops_of_stacks = String::new();
-    for stack in stacks {
-        tops_of_stacks.push(stack[stack.len() - 1]);
+    get_tops_of_stacks(&stacks)
+}
+
+pub fn solve_part2(input: &str) -> String {
+    let (mut stacks, procedure) = get_stacks_and_procedure(input);
+
+    for movement in procedure.iter() {
+        let mut moving_crates = Vec::new();
+        for _ in 0..movement.quantity {
+            let crate_name = stacks[movement.start_stack].pop().unwrap();
+            moving_crates.push(crate_name);
+        }
+        stacks[movement.end_stack].extend(moving_crates.iter().rev());
     }
-    tops_of_stacks
+
+    get_tops_of_stacks(&stacks)
 }
 
 #[cfg(test)]
@@ -76,5 +98,11 @@ move 1 from 1 to 2";
     fn test_part1() {
         let tops_of_stacks = solve_part1(INPUT);
         assert_eq!("CMZ", tops_of_stacks);
+    }
+
+    #[test]
+    fn test_part2() {
+        let tops_of_stacks = solve_part2(INPUT);
+        assert_eq!("MCD", tops_of_stacks);
     }
 }
