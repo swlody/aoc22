@@ -44,7 +44,7 @@ pub fn solve_part1_and_print_part2(program: &[Instr]) -> i32 {
         if x_pos >= sprite_min && x_pos <= sprite_max {
             print!("#");
         } else {
-            print!(".");
+            print!(" ");
         }
     }
 
@@ -67,6 +67,7 @@ pub fn solve_part1_and_print_part2(program: &[Instr]) -> i32 {
             }
         };
     }
+    println!();
 
     signal_strength
 }
