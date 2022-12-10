@@ -14,5 +14,5 @@ aoc_main::main! {
     day4 : generator => solve_part1, solve_part2;
     day5 => solve_part1, solve_part2;
     day6 => solve_part1, solve_part2;
-    day10 : generator => solve_part1;
+    day10 : generator => solve_part1_and_print_part2;
 }

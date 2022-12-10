@@ -20,7 +20,7 @@ pub fn generator(input: &str) -> Vec<Instr> {
     input.lines().map(Instr::from).collect()
 }
 
-pub fn solve_part1(program: &[Instr]) -> i32 {
+pub fn solve_part1_and_print_part2(program: &[Instr]) -> i32 {
     let mut x_reg = 1;
     let mut signal_strength = 0;
     let mut cycle = 0;
@@ -33,16 +33,35 @@ pub fn solve_part1(program: &[Instr]) -> i32 {
         }
     }
 
+    fn draw_pixel(x_reg: i32, cycle: i32) {
+        let x_pos = cycle % 40;
+        if x_pos == 0 {
+            println!();
+        }
+        let sprite_min = x_reg - 1;
+        let sprite_max = x_reg + 1;
+
+        if x_pos >= sprite_min && x_pos <= sprite_max {
+            print!("#");
+        } else {
+            print!(".");
+        }
+    }
+
     for instr in program.iter() {
         match instr {
             Instr::Addx(value) => {
+                draw_pixel(x_reg, cycle);
                 cycle += 1;
                 signal_strength += measure_signal(x_reg, cycle);
+
+                draw_pixel(x_reg, cycle);
                 cycle += 1;
                 signal_strength += measure_signal(x_reg, cycle);
                 x_reg += value;
             }
             Instr::Noop => {
+                draw_pixel(x_reg, cycle);
                 cycle += 1;
                 signal_strength += measure_signal(x_reg, cycle);
             }
@@ -61,6 +80,6 @@ mod tests {
     #[test]
     fn test_part1() {
         let program = generator(INPUT);
-        assert_eq!(13140, solve_part1(&program));
+        assert_eq!(13140, solve_part1_and_print_part2(&program));
     }
 }
