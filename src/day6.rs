@@ -1,10 +1,10 @@
 use std::collections::{HashSet, VecDeque};
 
 fn find_packet_start(input: &str, distinct_count: usize) -> usize {
-    let mut last_n = VecDeque::from_iter(input.chars().take(distinct_count));
-    for (i, c) in input.chars().skip(distinct_count).enumerate() {
+    let mut last_n = input.chars().take(distinct_count).collect::<VecDeque<_>>();
+    for (i, c) in input.chars().enumerate().skip(distinct_count) {
         if last_n.iter().collect::<HashSet<_>>().len() == distinct_count {
-            return i + distinct_count;
+            return i;
         }
 
         last_n.pop_front();
