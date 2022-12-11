@@ -20,50 +20,40 @@ pub fn generator(input: &str) -> Vec<Instr> {
     input.lines().map(Instr::from).collect()
 }
 
+fn cycle_advance(x_reg: &mut i32, cycle: &mut i32, signal_strength: &mut i32) {
+    let x_pos = *cycle % 40;
+    if x_pos == 0 {
+        println!();
+    }
+    let sprite_min = *x_reg - 1;
+    let sprite_max = *x_reg + 1;
+
+    if x_pos >= sprite_min && x_pos <= sprite_max {
+        print!("#");
+    } else {
+        print!(" ");
+    }
+
+    *cycle += 1;
+    if *cycle == 20 || (*cycle - 20) % 40 == 0 {
+        *signal_strength += *x_reg * *cycle;
+    }
+}
+
 pub fn solve_part1_and_print_part2(program: &[Instr]) -> i32 {
     let mut x_reg = 1;
     let mut signal_strength = 0;
     let mut cycle = 0;
 
-    fn measure_signal(x_reg: i32, cycle: i32) -> i32 {
-        if cycle == 20 || (cycle - 20) % 40 == 0 {
-            x_reg * cycle
-        } else {
-            0
-        }
-    }
-
-    fn draw_pixel(x_reg: i32, cycle: i32) {
-        let x_pos = cycle % 40;
-        if x_pos == 0 {
-            println!();
-        }
-        let sprite_min = x_reg - 1;
-        let sprite_max = x_reg + 1;
-
-        if x_pos >= sprite_min && x_pos <= sprite_max {
-            print!("#");
-        } else {
-            print!(" ");
-        }
-    }
-
     for instr in program.iter() {
         match instr {
             Instr::Addx(value) => {
-                draw_pixel(x_reg, cycle);
-                cycle += 1;
-                signal_strength += measure_signal(x_reg, cycle);
-
-                draw_pixel(x_reg, cycle);
-                cycle += 1;
-                signal_strength += measure_signal(x_reg, cycle);
+                cycle_advance(&mut x_reg, &mut cycle, &mut signal_strength);
+                cycle_advance(&mut x_reg, &mut cycle, &mut signal_strength);
                 x_reg += value;
             }
             Instr::Noop => {
-                draw_pixel(x_reg, cycle);
-                cycle += 1;
-                signal_strength += measure_signal(x_reg, cycle);
+                cycle_advance(&mut x_reg, &mut cycle, &mut signal_strength);
             }
         };
     }
