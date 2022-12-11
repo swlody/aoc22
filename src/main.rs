@@ -1,5 +1,6 @@
 mod day1;
 mod day10;
+mod day11;
 mod day2;
 mod day3;
 mod day4;
@@ -15,4 +16,5 @@ aoc_main::main! {
     day5 => solve_part1, solve_part2;
     day6 => solve_part1, solve_part2;
     day10 : generator => solve_part1_and_print_part2;
+    day11 => solve_part1;
 }
