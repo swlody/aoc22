@@ -105,6 +105,7 @@ impl From<&str> for Monkey {
 }
 
 fn monkey_business(monkeys: &mut [Monkey], control: u64, rounds: u32) -> u64 {
+    // 100% not stolen from reddit I swaer
     let all_divisors: u64 = monkeys
         .iter()
         .map(|monkey| monkey.throw_test.divisible_by)
