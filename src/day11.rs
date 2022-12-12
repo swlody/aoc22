@@ -1,13 +1,8 @@
 use std::collections::VecDeque;
 
-enum Value {
-    Old,
-    Imm(i64),
-}
-
 enum Operation {
-    Add(Value),
-    Mul(Value),
+    Add(Option<u64>),
+    Mul(Option<u64>),
 }
 
 impl From<&str> for Operation {
@@ -15,15 +10,15 @@ impl From<&str> for Operation {
         let op = op.strip_prefix("  Operation: new = old ").unwrap();
         if let Some(value) = op.strip_prefix("* ") {
             if value == "old" {
-                Operation::Mul(Value::Old)
+                Operation::Mul(None)
             } else {
-                Operation::Mul(Value::Imm(value.parse().unwrap()))
+                Operation::Mul(Some(value.parse().unwrap()))
             }
         } else if let Some(value) = op.strip_prefix("+ ") {
             if value == "old" {
-                Operation::Add(Value::Old)
+                Operation::Add(None)
             } else {
-                Operation::Add(Value::Imm(value.parse().unwrap()))
+                Operation::Add(Some(value.parse().unwrap()))
             }
         } else {
             panic!("Invalid operation: {op:?}");
@@ -32,7 +27,7 @@ impl From<&str> for Operation {
 }
 
 struct ThrowTest {
-    divisible_by: i64,
+    divisible_by: u64,
     if_true_monkey: usize,
     if_false_monkey: usize,
 }
@@ -64,10 +59,10 @@ impl From<(&str, &str, &str)> for ThrowTest {
 }
 
 pub struct Monkey {
-    starting_items: VecDeque<i64>,
+    starting_items: VecDeque<u64>,
     operation: Operation,
     throw_test: ThrowTest,
-    inspected_items: i64,
+    inspected_items: u64,
 }
 
 impl From<&str> for Monkey {
@@ -109,21 +104,24 @@ impl From<&str> for Monkey {
     }
 }
 
-pub fn solve_part1(input: &str) -> i64 {
-    let mut monkeys = input.split("\n\n").map(Monkey::from).collect::<Vec<_>>();
+fn monkey_business(monkeys: &mut [Monkey], control: u64, rounds: u32) -> u64 {
+    let all_divisors: u64 = monkeys
+        .iter()
+        .map(|monkey| monkey.throw_test.divisible_by)
+        .product();
 
-    for _round in 0..20 {
+    for _round in 0..rounds {
         for monkey_id in 0..monkeys.len() {
             while let Some(item) = monkeys[monkey_id].starting_items.pop_front() {
                 monkeys[monkey_id].inspected_items += 1;
 
-                use {Operation::*, Value::*};
+                use Operation::*;
                 let worry_level = match monkeys[monkey_id].operation {
-                    Add(Old) => item + item,
-                    Add(Imm(value)) => item + value,
-                    Mul(Old) => item * item,
-                    Mul(Imm(value)) => item * value,
-                } / 3;
+                    Add(None) => item + item,
+                    Add(Some(value)) => item + value,
+                    Mul(None) => item * item,
+                    Mul(Some(value)) => item * value,
+                } / control;
 
                 let new_monkey = if worry_level % monkeys[monkey_id].throw_test.divisible_by == 0 {
                     monkeys[monkey_id].throw_test.if_true_monkey
@@ -131,14 +129,16 @@ pub fn solve_part1(input: &str) -> i64 {
                     monkeys[monkey_id].throw_test.if_false_monkey
                 };
 
-                monkeys[new_monkey].starting_items.push_back(worry_level);
+                monkeys[new_monkey]
+                    .starting_items
+                    .push_back(worry_level % all_divisors);
             }
         }
     }
 
     let mut first = 0;
     let mut second = 0;
-    for monkey in &monkeys {
+    for monkey in monkeys {
         if monkey.inspected_items > second {
             if monkey.inspected_items > first {
                 second = first;
@@ -152,6 +152,16 @@ pub fn solve_part1(input: &str) -> i64 {
     first * second
 }
 
+pub fn solve_part1(input: &str) -> u64 {
+    let mut monkeys = input.split("\n\n").map(Monkey::from).collect::<Vec<_>>();
+    monkey_business(&mut monkeys, 3, 20)
+}
+
+pub fn solve_part2(input: &str) -> u64 {
+    let mut monkeys = input.split("\n\n").map(Monkey::from).collect::<Vec<_>>();
+    monkey_business(&mut monkeys, 1, 10_000)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -161,5 +171,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(10605, solve_part1(INPUT));
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(2713310158, solve_part2(INPUT));
     }
 }
